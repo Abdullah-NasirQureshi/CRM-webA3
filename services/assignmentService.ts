@@ -4,6 +4,7 @@ import User from "@/models/User";
 import ActivityLog from "@/models/ActivityLog";
 import { connectDB } from "@/lib/db";
 import { emitLeadAssigned } from "@/services/realtimeService";
+import { sendAssignmentEmail } from "@/services/notificationService";
 
 export class AssignmentError extends Error {
   constructor(message: string, public statusCode: number = 400) {
@@ -37,6 +38,8 @@ export async function assignLead(
   });
 
   emitLeadAssigned(lead, agentId);
+  // Send assignment email to agent (non-blocking)
+  sendAssignmentEmail(lead, agent.email, agent.name).catch(() => {});
   return lead;
 }
 

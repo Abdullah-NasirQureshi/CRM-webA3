@@ -4,6 +4,7 @@ import ActivityLog from "@/models/ActivityLog";
 import { connectDB } from "@/lib/db";
 import { emitLeadCreated, emitScoreChanged } from "@/services/realtimeService";
 import { computeScore } from "@/lib/scoring";
+import { sendNewLeadEmail } from "@/services/notificationService";
 
 export interface LeadFilters {
   status?: LeadStatus;
@@ -93,6 +94,9 @@ export async function createLead(
 
   // Broadcast real-time event to admins
   emitLeadCreated(lead);
+
+  // Send email notification to admin (non-blocking)
+  sendNewLeadEmail(lead).catch(() => {});
 
   return lead;
 }
