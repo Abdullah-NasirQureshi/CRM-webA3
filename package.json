@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "tsx server.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -41,6 +41,7 @@
     "jest": "^30.3.0",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.9",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import Lead, { ILead, LeadStatus, LeadScore, LeadSource } from "@/models/Lead";
 import ActivityLog from "@/models/ActivityLog";
 import { connectDB } from "@/lib/db";
+import { emitLeadCreated, emitScoreChanged } from "@/services/realtimeService";
+import { computeScore } from "@/lib/scoring";
 
 export interface LeadFilters {
   status?: LeadStatus;
@@ -89,6 +91,9 @@ export async function createLead(
     details: { name: lead.name, budget: lead.budget, score: lead.score },
   });
 
+  // Broadcast real-time event to admins
+  emitLeadCreated(lead);
+
   return lead;
 }
 
@@ -146,6 +151,11 @@ export async function updateLead(
   }).populate("assignedTo", "name email");
 
   if (!updated) throw new LeadNotFoundError();
+
+  // Emit score change if budget was updated
+  if (input.budget !== undefined) {
+    emitScoreChanged(updated);
+  }
 
   // Build details for activity log
   const changedFields = Object.keys(input);

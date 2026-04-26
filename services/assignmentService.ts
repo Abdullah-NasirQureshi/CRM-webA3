@@ -3,6 +3,7 @@ import Lead, { ILead } from "@/models/Lead";
 import User from "@/models/User";
 import ActivityLog from "@/models/ActivityLog";
 import { connectDB } from "@/lib/db";
+import { emitLeadAssigned } from "@/services/realtimeService";
 
 export class AssignmentError extends Error {
   constructor(message: string, public statusCode: number = 400) {
@@ -35,6 +36,7 @@ export async function assignLead(
     details: { agentId, agentName: agent.name },
   });
 
+  emitLeadAssigned(lead, agentId);
   return lead;
 }
 
@@ -67,5 +69,6 @@ export async function reassignLead(
     },
   });
 
+  emitLeadAssigned(lead, newAgentId);
   return lead;
 }
