@@ -9,9 +9,11 @@ export async function POST(req: NextRequest) {
     const parsed = signupSchema.safeParse(body);
     if (!parsed.success) {
       const fields: Record<string, string> = {};
-      parsed.error.errors.forEach((e) => {
-        fields[e.path.join(".")] = e.message;
+      const issues = parsed.error.issues ?? (parsed.error as any).errors ?? [];
+      issues.forEach((e: any) => {
+        fields[e.path.join(".") || "root"] = e.message;
       });
+      console.error("[signup] Validation failed:", fields, "body:", body);
       return NextResponse.json(
         { error: "Validation failed", fields },
         { status: 400 }

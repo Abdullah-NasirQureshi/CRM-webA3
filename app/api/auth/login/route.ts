@@ -9,8 +9,9 @@ export async function POST(req: NextRequest) {
     const parsed = loginSchema.safeParse(body);
     if (!parsed.success) {
       const fields: Record<string, string> = {};
-      parsed.error.errors.forEach((e) => {
-        fields[e.path.join(".")] = e.message;
+      const issues = parsed.error.issues ?? (parsed.error as any).errors ?? [];
+      issues.forEach((e: any) => {
+        fields[e.path.join(".") || "root"] = e.message;
       });
       return NextResponse.json(
         { error: "Validation failed", fields },

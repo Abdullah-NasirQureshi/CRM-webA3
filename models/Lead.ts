@@ -49,22 +49,20 @@ const LeadSchema = new Schema<ILead>(
   { timestamps: { createdAt: true, updatedAt: false } }
 );
 
-// Auto-compute score before every save
-LeadSchema.pre("save", function (next) {
+// Auto-compute score before every save (Mongoose v8: no next parameter)
+LeadSchema.pre("save", function () {
   this.score = computeScore(this.budget);
-  next();
 });
 
 // Also recompute on findOneAndUpdate when budget changes
-LeadSchema.pre("findOneAndUpdate", function (next) {
+LeadSchema.pre("findOneAndUpdate", function () {
   const update = this.getUpdate() as any;
   if (update?.budget !== undefined) {
     update.score = computeScore(update.budget);
-    if (update.$set?.budget !== undefined) {
-      update.$set.score = computeScore(update.$set.budget);
-    }
   }
-  next();
+  if (update?.$set?.budget !== undefined) {
+    update.$set.score = computeScore(update.$set.budget);
+  }
 });
 
 const Lead: Model<ILead> =

@@ -3,7 +3,8 @@ import { ZodSchema, ZodError } from "zod";
 
 function formatZodErrors(err: ZodError): Record<string, string> {
   const fields: Record<string, string> = {};
-  err.errors.forEach((e) => {
+  const issues = (err as any).issues ?? (err as any).errors ?? [];
+  issues.forEach((e: any) => {
     fields[e.path.join(".") || "root"] = e.message;
   });
   return fields;
