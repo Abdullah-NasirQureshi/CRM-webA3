@@ -73,10 +73,11 @@ export default function AdminDashboard() {
   async function handleAssign(leadId: string, agentId: string) {
     if (!agentId) return;
     // Optimistic update — reflect change immediately in UI
+    const agent = agents.find((a) => a._id === agentId || a._id?.toString() === agentId);
     setLeads((prev) =>
       prev.map((l) =>
         l._id === leadId
-          ? { ...l, assignedTo: agents.find((a) => a._id === agentId) ?? { _id: agentId } }
+          ? { ...l, assignedTo: agent ? { _id: agentId, name: agent.name, email: agent.email ?? "" } : { _id: agentId } }
           : l
       )
     );
@@ -92,6 +93,18 @@ export default function AdminDashboard() {
     if (!confirm("Delete this lead?")) return;
     await fetch(`/api/leads/${leadId}`, { method: "DELETE", headers: authHeaders() });
     fetchLeads(); fetchAnalytics();
+  }
+
+  async function handleExport(format: "excel" | "csv") {
+    const res = await fetch(`/api/leads/export?format=${format}`, { headers: authHeaders() });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `leads_${Date.now()}.${format === "excel" ? "xlsx" : "csv"}`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   async function handleCreate(e: React.FormEvent) {
@@ -143,14 +156,14 @@ export default function AdminDashboard() {
               className="bg-teal-600 hover:bg-teal-700 text-white text-sm px-4 py-2 rounded font-medium transition">
               + New Lead
             </button>
-            <a href="/api/leads/export?format=excel"
+            <button onClick={() => handleExport("excel")}
               className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 text-sm px-4 py-2 rounded font-medium transition">
               Export Excel
-            </a>
-            <a href="/api/leads/export?format=csv"
+            </button>
+            <button onClick={() => handleExport("csv")}
               className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 text-sm px-4 py-2 rounded font-medium transition">
               Export CSV
-            </a>
+            </button>
           </div>
           </div>
 

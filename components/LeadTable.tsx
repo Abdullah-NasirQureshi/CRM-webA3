@@ -93,7 +93,7 @@ export default function LeadTable({ leads, isAdmin, agents = [], onAssign, onDel
                 {isAdmin && (
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <select
-                      value={lead.assignedTo?._id ?? ""}
+                      value={lead.assignedTo?._id?.toString() ?? ""}
                       onChange={(e) => onAssign?.(lead._id, e.target.value)}
                       className="border border-gray-300 rounded px-2 py-1.5 text-xs text-gray-900 bg-white focus:ring-1 focus:ring-teal-500 focus:border-teal-500 w-full"
                     >
