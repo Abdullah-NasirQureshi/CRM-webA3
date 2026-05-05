@@ -19,7 +19,7 @@ interface Analytics {
   byAgent: Array<{ agentId: string; agentName: string; agentEmail: string; total: number; byStatus: Record<string, number> }>;
 }
 
-export default function AdminDashboard() {
+export default function AdminDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [user, setUser] = useState<ReturnType<typeof getUser>>(null);

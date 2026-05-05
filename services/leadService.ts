@@ -84,7 +84,8 @@ export async function createLead(
     followUpDate: input.followUpDate ? new Date(input.followUpDate) : undefined,
   });
 
-  // Log creation
+  console.log(`[Lead] CREATED — "${lead.name}" | Budget: PKR ${lead.budget.toLocaleString()} | Score: ${lead.score} | Source: ${lead.source} | ID: ${lead._id}`);
+
   await ActivityLog.create({
     leadId: lead._id,
     action: "created",
@@ -92,10 +93,7 @@ export async function createLead(
     details: { name: lead.name, budget: lead.budget, score: lead.score },
   });
 
-  // Broadcast real-time event to admins
   emitLeadCreated(lead);
-
-  // Send email notification to admin (non-blocking)
   sendNewLeadEmail(lead).catch(() => {});
 
   return lead;
@@ -158,6 +156,7 @@ export async function updateLead(
 
   // Emit score change if budget was updated
   if (input.budget !== undefined) {
+    console.log(`[Lead] SCORE CHANGED — "${updated.name}" | Budget: PKR ${input.budget.toLocaleString()} | New Score: ${updated.score}`);
     emitScoreChanged(updated);
   }
 
@@ -174,6 +173,8 @@ export async function updateLead(
   else if (input.followUpDate !== undefined && changedFields.length === 1) action = "followup_set";
   else if (input.status !== undefined) action = "status_updated";
 
+  console.log(`[Lead] UPDATED — "${updated.name}" | Action: ${action} | Changed: ${JSON.stringify(details)}`);
+
   await ActivityLog.create({
     leadId: updated._id,
     action,
@@ -189,6 +190,7 @@ export async function deleteLead(id: string): Promise<void> {
   const lead = await Lead.findById(id);
   if (!lead) throw new LeadNotFoundError();
 
+  console.log(`[Lead] DELETED — "${lead.name}" | ID: ${id}`);
   await Lead.deleteOne({ _id: id });
   await ActivityLog.deleteMany({ leadId: new mongoose.Types.ObjectId(id) });
 }

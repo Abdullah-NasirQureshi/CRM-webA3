@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
     if (format === "csv") {
       const buffer = exportToCSV(leads);
-      return new NextResponse(buffer, {
+      return new NextResponse(new Blob([new Uint8Array(buffer)], { type: "text/csv" }), {
         headers: {
           "Content-Type": "text/csv",
           "Content-Disposition": `attachment; filename="leads_${Date.now()}.csv"`,
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     }
 
     const buffer = exportToExcel(leads);
-    return new NextResponse(buffer, {
+    return new NextResponse(new Blob([new Uint8Array(buffer)], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": `attachment; filename="leads_${Date.now()}.xlsx"`,

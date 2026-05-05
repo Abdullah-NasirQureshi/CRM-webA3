@@ -9,7 +9,7 @@ import LeadDetailModal from "@/components/LeadDetailModal";
 import NotificationToast from "@/components/NotificationToast";
 import { useSocket } from "@/hooks/useSocket";
 
-export default function AgentDashboard() {
+export default function AgentDashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [user, setUser] = useState<ReturnType<typeof getUser>>(null);

@@ -17,7 +17,7 @@ export const createLeadSchema = z.object({
   email: z.string().email("Invalid email"),
   phone: z.string().optional(),
   propertyInterest: z.string().min(1, "Property interest is required"),
-  budget: z.number({ required_error: "Budget is required" }).min(0),
+  budget: z.number().min(0, "Budget must be at least 0"),
   status: z.enum(["New", "Contacted", "In Progress", "Closed", "Lost"]).optional(),
   notes: z.string().optional(),
   source: z.enum(["Facebook Ads", "Walk-in", "Website", "Other"]),

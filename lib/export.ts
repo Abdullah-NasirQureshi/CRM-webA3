@@ -48,7 +48,7 @@ export function exportToExcel(leads: ILead[]): Buffer {
  */
 export function exportToCSV(leads: ILead[]): Buffer {
   const rows = leadsToRows(leads);
-  if (!rows.length) return Buffer.from("");
+  if (!rows.length) return Buffer.alloc(0);
   const headers = Object.keys(rows[0]).join(",");
   const lines = rows.map((r) =>
     Object.values(r)

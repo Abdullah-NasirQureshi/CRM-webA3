@@ -30,6 +30,8 @@ export async function assignLead(
   lead.assignedTo = new mongoose.Types.ObjectId(agentId);
   await lead.save();
 
+  console.log(`[Assignment] ASSIGNED — Lead: "${lead.name}" → Agent: "${agent.name}" (${agent.email})`);
+
   await ActivityLog.create({
     leadId: lead._id,
     action: "assigned",
@@ -60,6 +62,8 @@ export async function reassignLead(
   const previousAgentId = lead.assignedTo?.toString();
   lead.assignedTo = new mongoose.Types.ObjectId(newAgentId);
   await lead.save();
+
+  console.log(`[Assignment] REASSIGNED — Lead: "${lead.name}" | From agent: ${previousAgentId} → To agent: "${newAgent.name}" (${newAgent.email})`);
 
   await ActivityLog.create({
     leadId: lead._id,

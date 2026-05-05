@@ -49,6 +49,7 @@ export async function signup(input: SignupInput): Promise<IUser> {
     role: input.role ?? "agent",
   });
 
+  console.log(`[Auth] SIGNUP — New user: "${user.name}" (${user.email}) | Role: ${user.role}`);
   return user;
 }
 
@@ -72,6 +73,7 @@ export async function login(input: LoginInput): Promise<{ token: string; user: I
 
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions);
 
+  console.log(`[Auth] LOGIN — "${user.name}" (${user.email}) | Role: ${user.role}`);
   return { token, user };
 }
 
